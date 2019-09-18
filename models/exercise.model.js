@@ -12,7 +12,7 @@ const Exercise = new Schema(
         },
         sets: {
             type: Number | String,
-        }
+        },
         reps: {
             type: Number | String,
         }
@@ -21,3 +21,5 @@ const Exercise = new Schema(
         timestamps: true
     }
 );
+
+module.exports = mongoose.model('Exercise', Exercise);

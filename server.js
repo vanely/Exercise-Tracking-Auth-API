@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieSession = require('cookie-session');
 const cors = require('cors');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -11,20 +12,17 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-app.use(passport.initialize());
-app.use(passport.session());
-const UserAccount = require('./models/account.model');
-
-
+// ------------------------------------------------------
 // redefine what the following fields will be refered to as and authenticate using the model where they are coming from
 // passport config (possibly put in own file)
+const Account = require('./models/account.model');
 passport.use(new LocalStrategy(
     {
         usernameField: 'email',
         passwordField: 'password',
     },  
     (email, password, done) => {
-        UserAccount.findOne({email: email})
+        Account.findOne({email: email})
         .then((user) => {
             if (!user) {
                 return done(null, false, {message: 'Incorrect email.'});
@@ -37,12 +35,22 @@ passport.use(new LocalStrategy(
     }
 ));
 
-passport.serializeUser(UserAccount.serializeUser());
-passport.deserializeUser(UserAccount.deserializeUser());
+passport.serializeUser(Account.serializeUser());
+passport.deserializeUser(Account.deserializeUser());
+
+app.use(
+    cookieSession({
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        keys: '943JHFU367730FDJ023YWMFJD',
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // ------------------------------------------------------
 // connect to mongoDB
-const uri = process.env.ALTLAS_URI;
+const uri = process.env.ATLAS_URI;
 mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true}, () => {
     console.log('Connection initialized');
 });

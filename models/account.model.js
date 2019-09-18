@@ -5,6 +5,14 @@ const {Schema} = mongoose;
 
 const Account = new Schema(
     {
+        name: {
+            type: String,
+            required: true,
+        },
+        age: {
+            type: Number,
+            required: true,
+        },
         email: {
             type: String,
             require: true,
@@ -23,7 +31,5 @@ const Account = new Schema(
     }
 );
 
-const UserAccount = mongoose.model('UserAccount', Account);
 Account.plugin(passportLocalMongoose);
-
-module.exports = UserAccount;
+module.exports = mongoose.model('UserAccount', Account);
